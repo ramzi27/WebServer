@@ -27,18 +27,19 @@ sslServerSocket = socket(AF_INET, SOCK_STREAM)
 sslServerSocket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
 sslServerSocket.bind(('', SSL_PORT))
 sslServerSocket.listen()
-ssl_socket = ssl.wrap_socket(sslServerSocket, server_side=True, certfile="ssl/myCert.cert", keyfile="ssl/myKey.key")
+ssl_socket = ssl.wrap_socket(sslServerSocket, server_side=True, certfile="ssl/fullchain.pem", keyfile="ssl/privkey.pem",
+                             ssl_version=ssl.PROTOCOL_TLSv1_2)
 logging.info("INFO   HTTPS server is running on port 8890")
 
 
-def sendResponse(header, connectSocket, address):  # parse request header and send response in a thread
+def sendResponse(header, connectSocket, address, srcPort):  # parse request header and send response in a thread
     try:
         st = str(header).split("\n")[0]
         st1 = st.split(" ")
         filePath = st1[1]
         method = st1[0]
         # log request
-        logging.info("INFO  " + method + " " + address + " " + filePath)
+        logging.info("INFO  " + method + " " + address + ":" + srcPort + " " + filePath)
         if method == 'GET':
             if filePath == "/":  # index
                 mFile = "root/index.html"
@@ -70,7 +71,7 @@ def listenHttp():
         if httpAddr is not None and httpConnectSocket is not None:
             print("http connection ...........................................")
             header = httpConnectSocket.recv(BUFFER_SIZE).decode()
-            _start_new_thread(sendResponse, (header, httpConnectSocket, httpAddr[0]))
+            _start_new_thread(sendResponse, (header, httpConnectSocket, httpAddr[0], str(httpAddr[1])))
 
 
 def listenSSL():
@@ -79,7 +80,7 @@ def listenSSL():
         if sslAddr is not None and httpsConnectSocket is not None:
             print("ssl connection ...........................................")
             header = httpsConnectSocket.recv(BUFFER_SIZE).decode()
-            _start_new_thread(sendResponse, (header, httpsConnectSocket, sslAddr[0]))
+            _start_new_thread(sendResponse, (header, httpsConnectSocket, sslAddr[0], str(sslAddr[1])))
 
 
 # two threads running at the same time
