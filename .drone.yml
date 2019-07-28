@@ -12,3 +12,5 @@ steps:
     repo: ramzit27/webserver
     autotag: true
     dockerfile: Dockerfile
+    env:
+      PLUGIN_DEBUG: "true"  
