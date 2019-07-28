@@ -12,4 +12,5 @@ steps:
     repo: ramzit27/webserver
     autotag: true
     dockerfile: Dockerfile
+    privileged: true
     debug: true
