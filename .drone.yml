@@ -11,3 +11,4 @@ steps:
       from_password: docker_password
     repo: ramzit27/webserver
     autotag: true
+    dockerfile: Dockerfile
