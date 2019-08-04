@@ -3,5 +3,3 @@ RUN  mkdir /app
 WORKDIR /app
 COPY . .
 CMD python webserver.py
-
-
